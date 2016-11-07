@@ -1,6 +1,6 @@
 var TILE_SIZE = 100;
-var BLANK_TOP = (3 * TILE_SIZE) + "px"; //y position of the blank tile
-var BLANK_LEFT = (3 * TILE_SIZE) + "px"; //x position of the blank tile
+var div16T = "300px"; //y position of the blank tile
+var div16L = "300px"; //x position of the blank tile
 var begin = new Date();
 var moveCount = 0;
 var timerTime = null;
@@ -22,9 +22,9 @@ function Tiles() {
 	var x = 0;
 	var y = 0;
 	for (var i = 0; i <number; i++) {
-		if (i % 4 == 0 && i != 0) {
+		if (i % 4 == 0 && i!==0) {
 			x = 0;
-			y += TILE_SIZE;
+			y += 100;
 		}
 
 		var puzzle = 	$$("#puzzle15> div")[i];
@@ -36,7 +36,7 @@ function Tiles() {
 		puzzle.style.backgroundPosition = -x + "px " + -y + "px ";
 		puzzle.observe("mouseover", animate);
 		puzzle.observe("click", current);
-		x =x+TILE_SIZE;
+		x =x+100;
 	}
 	var moveCount = 0;
 	document.getElementById("moveCount").innerHTML = moveCount;
@@ -56,19 +56,19 @@ function animate(event) {
 }
 
 function checkNeighbor(top, left) {
-	if ((parseInt(BLANK_TOP) + TILE_SIZE == top) && (parseInt(BLANK_LEFT) == left))
+	if ((parseInt(div16T) + 100 == top) && (parseInt(div16L) == left))
  		{
  			 return true;
  		}
- 		else if((parseInt(BLANK_TOP) - TILE_SIZE == top) && (parseInt(BLANK_LEFT) == left))
+ 		else if((parseInt(div16T) - 100 == top) && (parseInt(div16L) == left))
  		{
  			return true;
  		}
- 		else if((parseInt(BLANK_TOP) == top)&& (parseInt(BLANK_LEFT) + TILE_SIZE == left))
+ 		else if((parseInt(div16T) == top)&& (parseInt(div16L) + 100 == left))
  		{
  			return true;
  		}
- 		else if((parseInt(BLANK_TOP) == top) && (parseInt(BLANK_LEFT) - TILE_SIZE == left)) {
+ 		else if((parseInt(div16T) == top) && (parseInt(div16L) - 100 == left)) {
  		return true;
  	}
  	else {
@@ -80,21 +80,21 @@ function current(event) {
 	var temp = 0;
 	var top = parseInt(this.getStyle("top"));
 	var left = parseInt(this.getStyle("left"));
-	if (top + TILE_SIZE == parseInt(BLANK_TOP) && left == parseInt(BLANK_LEFT)) {
-		temp = BLANK_TOP;
-		BLANK_TOP = this.getStyle("top");
+	if (top + 100 == parseInt(div16T) && left == parseInt(div16L)) {
+		temp = div16T;
+		div16T = this.getStyle("top");
 		this.style.top = temp;
-	} else if (top - TILE_SIZE == parseInt(BLANK_TOP) && left == parseInt(BLANK_LEFT)) {
-		temp = BLANK_TOP;
-		BLANK_TOP = this.getStyle("top");
+	} else if (top - 100 == parseInt(div16T) && left == parseInt(div16L)) {
+		temp = div16T;
+		div16T = this.getStyle("top");
 		this.style.top = temp;
-	} else if (top == parseInt(BLANK_TOP) && left + TILE_SIZE == parseInt(BLANK_LEFT)) {
-		temp = BLANK_LEFT;
-		BLANK_LEFT = this.getStyle("left");
+	} else if (top == parseInt(div16T) && left + 100 == parseInt(div16L)) {
+		temp = div16L;
+		div16L = this.getStyle("left");
 		this.style.left = temp;
-	} else if (top == parseInt(BLANK_TOP) && left - TILE_SIZE == parseInt(BLANK_LEFT)) {
-		temp = BLANK_LEFT;
-		BLANK_LEFT = this.getStyle("left");
+	} else if (top == parseInt(div16T) && left - 100 == parseInt(div16L)) {
+		temp = div16L;
+		div16L = this.getStyle("left");
 		this.style.left = temp;
 	}
 	moveCount ++;
@@ -103,49 +103,43 @@ function current(event) {
 }
 
 function shuffle() {
-	for (var a = 0; a < 100; a++) {
 
-		//Find the tiles that can be moved (next to empty space)
-		var canMove = [];
-		for (var i = 0; i <15; i++) {
-			var top = parseInt($$("#puzzle15 > div")[i].getStyle("top"));
-			var left = parseInt($$("#puzzle15 > div")[i].getStyle("left"));
-			if (checkNeighbor(top, left)) {
-				canMove.push(getTile(top, left));
+		for (var t = 0; t < 100; t++) {
+			var a = $("#puzzle15 >div")[t].remove.toArray();
+			for (var i = a.length - 1; i >= 1; i--) {
+				var j = Math.floor(Math.random() * (i + 1));
+				var bi = a[i];
+				var bj = a[j];
+				a[i] = bj;
+				a[j] = bi;
 			}
-		}
+			setBackground()
+			}
 
+			for (var a = 0; a < 100; a++) {
+				var space = [];
+				for (var i = 0; i <15; i++) {
+					var top = parseInt($$("#puzzle15 > div")[i].getStyle("top"));
+					var left = parseInt($$("#puzzle15 > div")[i].getStyle("left"));
+					if (checkNeighbor(top, left)) {
+						space.push(getTile(top, left));
+					}
+				}
+// }
+	// 			var div = $("#puzzle15 > div").remove().toArray();
+ // 				for (var i = div.length - 1; i >= 1; i--) {
+	// 			var j = Math.floor(Math.random() * (i + 1));
+	// 			var bi = a[i];
+	// 			var bj = a[j];
+	// 			a[i] = bj;
+	// 			a[j] = bi;
+	// 		}
+	//
+	// $("#puzzle15").append(div);
+	// }
 
-		//Randomly pick one...
-		var randomNumber = parseInt(Math.random() * canMove.length);
-		var movingTile = canMove[randomNumber];
-		var movingTileTop = $("" + movingTile).getStyle("top");
-		var movingTileLeft = $("" + movingTile).getStyle("left");
-		var temp;
-
-		//...and move it
-		if (parseInt(BLANK_TOP) != parseInt(movingTileTop)) {
-			temp = BLANK_TOP;
-			BLANK_TOP = movingTileTop;
-			movingTileTop = temp;
-			$("" + movingTile).style.top = movingTileTop;
-
-		} else if (parseInt(BLANK_LEFT) != parseInt(movingTileLeft)) {
-			temp = BLANK_LEFT;
-			BLANK_LEFT = movingTileLeft;
-			movingTileLeft = temp;
-			$("" + movingTile).style.left = movingTileLeft;
-		}
-	}
 }
 
-function getTile(top, left) {
-	for (var i = 0; i <15; i++) {
-		if (parseInt($$("#puzzle15 > div")[i].getStyle("top")) == top && parseInt($$("#puzzle15 > div")[i].getStyle("left")) == left) {
-			return $$("#puzzle15 > div")[i].value;
-		}
-	}
-}
 
 
 function timer(begin){		// Timer
